@@ -13,7 +13,13 @@ import * as schema from './schema';
     {
       provide: DRIZZLE_CONNECTION,
       useFactory: async () => {
-        const connection = await createConnection(drizzleConfig.dbCredentials);
+        const connection = await createConnection({
+          host: 'localhost',
+          port: 3307,
+          user: 'papyrus',
+          password: 'pass',
+          database: 'test'
+      });
         return  drizzle(connection, {schema, 
             mode: 'default'
         });

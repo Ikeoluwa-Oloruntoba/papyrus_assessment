@@ -4,13 +4,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { PrismaUserTokenRepository } from 'src/prisma-repositories/usertokens.repo';
+import { UserAccessTokenRepository } from 'src/drizzle-repositories/user-token.repository';
+
 
 
 @Injectable()
 export class RevokedTokenMiddleware implements NestMiddleware {
   constructor(
-    private readonly userTokenRepo: PrismaUserTokenRepository,
+    private readonly userTokenRepo: UserAccessTokenRepository,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {

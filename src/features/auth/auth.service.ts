@@ -16,7 +16,7 @@ export class AuthService {
     async signinUser(data: loginUserDto) {
         const { email, password } = data;
     
-        const findUser = await this.userRepo.findUserByAny(email);
+        const findUser = await this.userRepo.findUserByEmail(email);
         if(!findUser){
           throw new BadRequestException('User Not Found')
         }

@@ -8,6 +8,8 @@ import { AuthModule } from './features/auth/auth.module';
 import { PostModule } from './features/post/post.module';
 import { CommentModule } from './features/comment/comment.module';
 import { HelperModule } from './helpers/helper.module';
+import drizzleConfig from 'drizzle.config';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [DrizzleModule, DrizzleRepositoryModule, UserModule, AuthModule, PostModule, CommentModule, HelperModule],

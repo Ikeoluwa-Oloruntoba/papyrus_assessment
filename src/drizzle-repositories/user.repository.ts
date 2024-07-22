@@ -34,4 +34,12 @@ export class UserRepository implements IUserRepository {
 
         return user
     }
+
+
+    async findUserByEmail(email: any): Promise<User> {
+        
+        const [user] = await this.db.select().from(schema.User).where(eq(schema.User.email, email ));
+
+        return user
+    }
 }
