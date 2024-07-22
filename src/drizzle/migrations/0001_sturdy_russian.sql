@@ -1,0 +1,1 @@
+ALTER TABLE `user_access_tokens` MODIFY COLUMN `uuid` varchar(36);
