@@ -24,15 +24,5 @@ export class FetchUsersDto {
   readonly search?: string;
 
 
-  constructor(data: Partial<FetchUsersDto>) {
-    Object.assign(this, data);
-  }
-
-  validate(): string | null {
-    const errors = validateSync(this);
-    if (errors.length > 0) {
-      return Object.values(errors[0].constraints)[0];
-    }
-    return null;
-  }
+  
 }

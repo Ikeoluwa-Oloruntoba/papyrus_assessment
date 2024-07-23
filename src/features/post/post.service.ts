@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/createPost.dto';
 import { FetchPostDto } from './dto/fetchPost.dto';
 import { PostRepository } from 'src/drizzle-repositories/post.repository';
+import { CreatePostZod } from './dto/post.zod';
 
 @Injectable()
 export class PostService {
 
     constructor(private readonly postsRepository: PostRepository) {}
 
-    async create(data: CreatePostDto, userId:number){
+    async create(data: CreatePostZod, userId:number){
 
         return await this.postsRepository.create(data, userId)
     }
@@ -26,4 +27,13 @@ export class PostService {
 
         return await this.postsRepository.findAllForUser(userId);
     }
+
+
+
+    async fetchPostById(id: number){
+
+    
+        return await this.postsRepository.findById(id);
+    }
+
 }

@@ -13,8 +13,7 @@ import { GetCurrentUser } from 'src/common/decorators';
 })
 export class CommentController {
   constructor(
-    private readonly commentService: CommentService,
-    private dtoValidator: DtoValidator) {}
+    private readonly commentService: CommentService) {}
     
 
     @Post('create')
@@ -22,12 +21,10 @@ export class CommentController {
     @ApiOperation({ summary: 'Create a Comment' })
     @ApiBody({ type: CreateCommentDto })
     @UseGuards(UserGuard)
-    async createComment(@Body() data: any, @GetCurrentUser('sub') userId: number) {
+    async createComment(@Body() data: CreateCommentDto, @GetCurrentUser('sub') userId: number) {
   
       try {
-        // Validate DTO
-        await this.dtoValidator.validateDto(data, CreateCommentDto);
-    
+  
         // Create user
         const newComment = await this.commentService.create(data, userId);
     

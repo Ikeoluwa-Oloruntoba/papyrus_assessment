@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, HttpStatus, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { loginUserDto } from './dto/loginUser.dto';
@@ -6,6 +6,8 @@ import { DtoValidator } from 'src/helpers/dtoValidator.helper';
 import { GetCurrentUser } from 'src/common/decorators';
 import { Request } from 'express';
 import { UserGuard } from 'src/common/guards';
+import { ZodValidationPipe } from 'src/common/pipes/zod.validation';
+import { loginUserSchema, LoginUserZod } from './dto/loginUser.zod';
 
 @ApiTags('Auth')
 @Controller({
@@ -14,15 +16,15 @@ import { UserGuard } from 'src/common/guards';
 })
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private dtoValidator: DtoValidator) {}
+    private readonly authService: AuthService) {}
 
   @Post('user/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login a user' })
   @ApiBody({ type: loginUserDto })
-  async signinUser(@Headers() headers: any, @Body() data: any) {
-    await this.dtoValidator.validateDto(data, loginUserDto);
+  @UsePipes(new ZodValidationPipe(loginUserSchema))
+  async signinUser(@Headers() headers: any, @Body() data: LoginUserZod) {
+
     return await this.authService.signinUser(data);
   }
 

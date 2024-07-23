@@ -1,11 +1,13 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { DtoValidator } from 'src/helpers/dtoValidator.helper';
 import { CreatePostDto } from './dto/createPost.dto';
 import { GetCurrentUser } from 'src/common/decorators';
 import { UserGuard } from 'src/common/guards';
 import { FetchPostDto } from './dto/fetchPost.dto';
+import { ZodValidationPipe } from 'src/common/pipes/zod.validation';
+import { createPostSchema, CreatePostZod } from './dto/post.zod';
 
 @ApiTags('Posts')
 @Controller({
@@ -14,8 +16,7 @@ import { FetchPostDto } from './dto/fetchPost.dto';
 })
 export class PostController {
   constructor(
-    private readonly postService: PostService,
-    private dtoValidator: DtoValidator) {}
+    private readonly postService: PostService) {}
 
 
 
@@ -25,11 +26,9 @@ export class PostController {
   @ApiOperation({ summary: 'Create a User' })
   @ApiBody({ type: CreatePostDto })
   @UseGuards(UserGuard)
-  async createPost(@Body() data: any, @GetCurrentUser('sub') userId: number) {
+  @UsePipes(new ZodValidationPipe(createPostSchema))
+  async createPost(@Body() data: CreatePostZod, @GetCurrentUser('sub') userId: number) {
 
-      // Validate DTO
-      await this.dtoValidator.validateDto(data, CreatePostDto);
-  
       // Create user
       const newPost = await this.postService.create(data, userId);
   
@@ -44,12 +43,17 @@ export class PostController {
   @Get('user/get')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get Post for a User' })
-  @ApiBody({ type: FetchPostDto })
   @UseGuards(UserGuard)
-  async getPostForUser(@Body() data: any, @GetCurrentUser('sub') userId: number) {
+  @UsePipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true
+    }
+  }))
+  async getPostForUser(@Query() data: FetchPostDto, @GetCurrentUser('sub') userId: number) {
 
-      await this.dtoValidator.validateDto(data, FetchPostDto);
-  
       // Create user
       const posts = await this.postService.fetchUserPost(data, userId);
   
@@ -64,20 +68,39 @@ export class PostController {
   @Get('get')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get All Posts' })
-  @ApiBody({ type: FetchPostDto })
-  async getPost(@Body() data: any) {
+  @UsePipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true
+    }
+  }))
+  async getPost(@Query() data: FetchPostDto) {
 
-      await this.dtoValidator.validateDto(data, FetchPostDto);
-  
       // Create user
       const posts = await this.postService.fetchPosts(data);
   
       return {
-        message: "Post Fetched Successfully",
+        message: "Posts Fetched Successfully",
         data: posts
       };
    
   }
 
+
+  @Get('get/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get Single Post' })
+  async getSinglePost(@Param('id') id: number){
+
+    const post =  await this.postService.fetchPostById(id)
+
+      
+    return {
+      message: "Post Fetched Successfully",
+      data: post
+    };
+  }
 
 }

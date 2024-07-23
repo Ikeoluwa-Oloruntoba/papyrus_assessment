@@ -14,20 +14,14 @@ import { FetchUsersDto } from './dto/fetchusers.dto';
 })
 export class UserController {
   constructor(
-    private readonly userService: UserService,
-    private dtoValidator: DtoValidator) {}
+    private readonly userService: UserService) {}
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a User' })
   @ApiBody({ type: CreateUserDto })
-  async createUser(@Body() data: any) {
+  async createUser(@Body() data: CreateUserDto) {
 
-    console.log(data)
-
-      // Validate DTO
-      await this.dtoValidator.validateDto(data, CreateUserDto);
-  
       // Create user
       const newUser = await this.userService.create(data);
   

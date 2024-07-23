@@ -3,6 +3,7 @@ import { loginUserDto } from './dto/loginUser.dto';
 import { AuthHelper } from 'src/helpers/auth.helper';
 import { UserAccessTokenRepository } from 'src/drizzle-repositories/user-token.repository';
 import { UserRepository } from 'src/drizzle-repositories/user.repository';
+import { LoginUserZod } from './dto/loginUser.zod';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
         private authHelper: AuthHelper,
     ){}
 
-    async signinUser(data: loginUserDto) {
+    async signinUser(data: LoginUserZod) {
         const { email, password } = data;
     
         const findUser = await this.userRepo.findUserByEmail(email);
