@@ -30,19 +30,17 @@
 
 ```bash
 $ npm install
+
 ```
 
 ## Running the app
 
+Make sure you have docker Installed on your computer!
+
 ```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+$ make run-all
 
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
